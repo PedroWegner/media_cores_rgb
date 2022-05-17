@@ -25,7 +25,8 @@ namespace media_cores_rgb
         double somaB = 0;
         double count = 0;
 
-
+        List<double[]> pessoas = new List<double[]>();
+            
 
 
         #endregion
@@ -48,6 +49,7 @@ namespace media_cores_rgb
             }
             comboWeb.SelectedIndex = 0;
             vdc = new VideoCaptureDevice();
+            startButton_Click(sender, e);
         }
 
         private void startButton_Click(object sender, EventArgs e)
@@ -70,24 +72,35 @@ namespace media_cores_rgb
             somaB = 0;
             somaG = 0;
             somaR = 0;
+            count = 0;
             for (int i = 0; i < array.Length; i += 3)
             {
-                if (!(array[i + 0] < 190 && array[i + 1] < 190 && array[i + 2] < 190))
+                if (!(array[i + 0] < 128 && array[i + 1] < 128 && array[i + 2] < 128 ))
                 {
+                    count++;
                     array[i + 0] = 255;
-                    array[i + 1] = 0;
-                    array[i + 2] = 0;
+                    array[i + 1] = 255;
+                    array[i + 2] = 255;
                 }
-                somaB += array[i + 0];
-                somaG += array[i + 1];
-                somaR += array[i + 2];
+                else
+                {
+                    somaB += array[i + 0];
+                    somaG += array[i + 1];
+                    somaR += array[i + 2];
+                }
 
             }
 
-            labelBlue.Text = "Blue: " + (somaB / (array.Length / 3)).ToString();
-            labelGreen.Text = "Green: " + (somaG / (array.Length / 3)).ToString();
-            labelRed.Text = "Red: " + (somaR / (array.Length / 3)).ToString();
-            labelByte.Text = "Qtd bytes: " + (array.Length / 3).ToString();
+            var mediaB = somaB / ((array.Length / 3) - count);
+            var mediaG= somaG / ((array.Length / 3) - count);
+            var mediaR = somaR / ((array.Length / 3) - count);
+            var total = Math.Sqrt(mediaB * mediaB + mediaG * mediaG + mediaR * mediaR);
+
+
+            labelBlue.Text = "Blue: " + (mediaB / mediaG).ToString();
+            labelGreen.Text = "Green: " + (mediaG / mediaR).ToString();
+            labelRed.Text = "Red: " + (mediaR / mediaB).ToString();
+            labelByte.Text = "Qtd bytes: " + ((array.Length / 3) - count).ToString();
 
             Marshal.Copy(array, 0, data.Scan0, array.Length);
             bmp.UnlockBits(data);
