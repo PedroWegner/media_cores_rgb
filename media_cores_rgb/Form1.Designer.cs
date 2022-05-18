@@ -30,12 +30,15 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pictureWeb = new System.Windows.Forms.PictureBox();
+            this.salvarBtn = new System.Windows.Forms.Button();
+            this.labelByte = new System.Windows.Forms.Label();
             this.labelGreen = new System.Windows.Forms.Label();
             this.labelBlue = new System.Windows.Forms.Label();
             this.labelRed = new System.Windows.Forms.Label();
             this.startButton = new System.Windows.Forms.Button();
             this.comboWeb = new System.Windows.Forms.ComboBox();
-            this.labelByte = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.showPessoas = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -55,6 +58,9 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.showPessoas);
+            this.splitContainer1.Panel2.Controls.Add(this.label1);
+            this.splitContainer1.Panel2.Controls.Add(this.salvarBtn);
             this.splitContainer1.Panel2.Controls.Add(this.labelByte);
             this.splitContainer1.Panel2.Controls.Add(this.labelGreen);
             this.splitContainer1.Panel2.Controls.Add(this.labelBlue);
@@ -74,25 +80,42 @@
             this.pictureWeb.TabIndex = 0;
             this.pictureWeb.TabStop = false;
             // 
+            // salvarBtn
+            // 
+            this.salvarBtn.Location = new System.Drawing.Point(7, 236);
+            this.salvarBtn.Name = "salvarBtn";
+            this.salvarBtn.Size = new System.Drawing.Size(209, 23);
+            this.salvarBtn.TabIndex = 5;
+            this.salvarBtn.Text = "Salvar";
+            this.salvarBtn.UseVisualStyleBackColor = true;
+            this.salvarBtn.Click += new System.EventHandler(this.salvarBtn_Click);
+            // 
+            // labelByte
+            // 
+            this.labelByte.AutoSize = true;
+            this.labelByte.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelByte.Location = new System.Drawing.Point(2, 179);
+            this.labelByte.Name = "labelByte";
+            this.labelByte.Size = new System.Drawing.Size(0, 24);
+            this.labelByte.TabIndex = 4;
+            // 
             // labelGreen
             // 
             this.labelGreen.AutoSize = true;
             this.labelGreen.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelGreen.Location = new System.Drawing.Point(3, 101);
             this.labelGreen.Name = "labelGreen";
-            this.labelGreen.Size = new System.Drawing.Size(52, 24);
+            this.labelGreen.Size = new System.Drawing.Size(0, 24);
             this.labelGreen.TabIndex = 3;
-            this.labelGreen.Text = "label1";
             // 
             // labelBlue
             // 
             this.labelBlue.AutoSize = true;
             this.labelBlue.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelBlue.Location = new System.Drawing.Point(3, 125);
+            this.labelBlue.Location = new System.Drawing.Point(3, 134);
             this.labelBlue.Name = "labelBlue";
-            this.labelBlue.Size = new System.Drawing.Size(52, 24);
+            this.labelBlue.Size = new System.Drawing.Size(0, 24);
             this.labelBlue.TabIndex = 2;
-            this.labelBlue.Text = "label1";
             // 
             // labelRed
             // 
@@ -100,9 +123,8 @@
             this.labelRed.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelRed.Location = new System.Drawing.Point(3, 68);
             this.labelRed.Name = "labelRed";
-            this.labelRed.Size = new System.Drawing.Size(52, 24);
+            this.labelRed.Size = new System.Drawing.Size(0, 24);
             this.labelRed.TabIndex = 1;
-            this.labelRed.Text = "label1";
             // 
             // startButton
             // 
@@ -122,15 +144,24 @@
             this.comboWeb.Size = new System.Drawing.Size(213, 24);
             this.comboWeb.TabIndex = 0;
             // 
-            // labelByte
+            // label1
             // 
-            this.labelByte.AutoSize = true;
-            this.labelByte.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelByte.Location = new System.Drawing.Point(2, 179);
-            this.labelByte.Name = "labelByte";
-            this.labelByte.Size = new System.Drawing.Size(52, 24);
-            this.labelByte.TabIndex = 4;
-            this.labelByte.Text = "label1";
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 316);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(44, 16);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "label1";
+            // 
+            // showPessoas
+            // 
+            this.showPessoas.Location = new System.Drawing.Point(10, 268);
+            this.showPessoas.Name = "showPessoas";
+            this.showPessoas.Size = new System.Drawing.Size(209, 23);
+            this.showPessoas.TabIndex = 7;
+            this.showPessoas.Text = "Pessoas";
+            this.showPessoas.UseVisualStyleBackColor = true;
+            this.showPessoas.Click += new System.EventHandler(this.showPessoas_Click);
             // 
             // Form1
             // 
@@ -163,6 +194,9 @@
         private System.Windows.Forms.Label labelBlue;
         private System.Windows.Forms.Label labelRed;
         private System.Windows.Forms.Label labelByte;
+        private System.Windows.Forms.Button salvarBtn;
+        private System.Windows.Forms.Button showPessoas;
+        private System.Windows.Forms.Label label1;
     }
 }
 

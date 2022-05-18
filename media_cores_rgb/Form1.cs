@@ -7,10 +7,12 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AForge.Video;
 using AForge.Video.DirectShow;
+
 
 namespace media_cores_rgb
 {
@@ -24,9 +26,9 @@ namespace media_cores_rgb
         double somaG = 0;
         double somaB = 0;
         double count = 0;
-
+        double[] vetor = new double[1];
         List<double[]> pessoas = new List<double[]>();
-            
+
 
 
         #endregion
@@ -75,7 +77,7 @@ namespace media_cores_rgb
             count = 0;
             for (int i = 0; i < array.Length; i += 3)
             {
-                if (!(array[i + 0] < 128 && array[i + 1] < 128 && array[i + 2] < 128 ))
+                if (!(array[i + 0] < 128 && array[i + 1] < 128 && array[i + 2] < 128))
                 {
                     count++;
                     array[i + 0] = 255;
@@ -89,18 +91,19 @@ namespace media_cores_rgb
                     somaR += array[i + 2];
                 }
 
-            }
 
+
+            }
             var mediaB = somaB / ((array.Length / 3) - count);
-            var mediaG= somaG / ((array.Length / 3) - count);
+            var mediaG = somaG / ((array.Length / 3) - count);
             var mediaR = somaR / ((array.Length / 3) - count);
             var total = Math.Sqrt(mediaB * mediaB + mediaG * mediaG + mediaR * mediaR);
 
 
-            labelBlue.Text = "Blue: " + (mediaB / mediaG).ToString();
-            labelGreen.Text = "Green: " + (mediaG / mediaR).ToString();
-            labelRed.Text = "Red: " + (mediaR / mediaB).ToString();
-            labelByte.Text = "Qtd bytes: " + ((array.Length / 3) - count).ToString();
+            labelBlue.Text = (mediaB / mediaG).ToString(); 
+            labelGreen.Text = (mediaG / mediaR).ToString();
+            labelRed.Text = (mediaR / mediaB).ToString();
+            labelByte.Text = "Qtd bytes: " + (total.ToString());
 
             Marshal.Copy(array, 0, data.Scan0, array.Length);
             bmp.UnlockBits(data);
@@ -115,6 +118,22 @@ namespace media_cores_rgb
             {
                 vdc.Stop();
             }
+        }
+
+        private void salvarBtn_Click(object sender, EventArgs e)
+        {
+            double[] x = { double.Parse(labelBlue.Text), double.Parse(labelGreen.Text), double.Parse(labelRed.Text) };
+            pessoas.Add(x);
+        }
+        StringBuilder st = null;
+        private void showPessoas_Click(object sender, EventArgs e)
+        {
+            st = new StringBuilder("");
+            foreach (double[] i in pessoas)
+            {
+                st.AppendLine(i[0].ToString() + " - " + i[1].ToString() + " - " + i[2].ToString());
+            }
+            label1.Text = st.ToString();
         }
     }
 }
