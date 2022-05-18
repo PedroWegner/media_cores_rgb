@@ -97,13 +97,13 @@ namespace media_cores_rgb
             var mediaB = somaB / ((array.Length / 3) - count);
             var mediaG = somaG / ((array.Length / 3) - count);
             var mediaR = somaR / ((array.Length / 3) - count);
-            var total = Math.Sqrt(mediaB * mediaB + mediaG * mediaG + mediaR * mediaR);
+            var total = Math.Sqrt(mediaB * mediaB + mediaG * mediaG + mediaR * mediaR); // usando esse total aqui
 
 
-            labelBlue.Text = (mediaB / mediaG).ToString(); 
+            labelBlue.Text = (mediaB / mediaG).ToString();
             labelGreen.Text = (mediaG / mediaR).ToString();
             labelRed.Text = (mediaR / mediaB).ToString();
-            labelByte.Text = "Qtd bytes: " + (total.ToString());
+            labelByte.Text = total.ToString();
 
             Marshal.Copy(array, 0, data.Scan0, array.Length);
             bmp.UnlockBits(data);
@@ -122,8 +122,11 @@ namespace media_cores_rgb
 
         private void salvarBtn_Click(object sender, EventArgs e)
         {
-            double[] x = { double.Parse(labelBlue.Text), double.Parse(labelGreen.Text), double.Parse(labelRed.Text) };
-            pessoas.Add(x);
+            // a ideia eh trocar esse teste para 'qtd_bytes'
+            double teste = double.Parse(labelByte.Text);
+            double[] pessoa = { double.Parse(labelBlue.Text) * teste, double.Parse(labelGreen.Text) * teste, double.Parse(labelRed.Text)* teste };
+            pessoas.Add(pessoa);
+
         }
         StringBuilder st = null;
         private void showPessoas_Click(object sender, EventArgs e)
@@ -134,6 +137,40 @@ namespace media_cores_rgb
                 st.AppendLine(i[0].ToString() + " - " + i[1].ToString() + " - " + i[2].ToString());
             }
             label1.Text = st.ToString();
+
+
+            double teste = double.Parse(labelByte.Text);
+            // a ideia eh trocar esse teste para 'qtd_bytes'
+            double[] rosto = {double.Parse(labelBlue.Text) * teste, double.Parse(labelGreen.Text) * teste, double.Parse(labelRed.Text)* teste };
+            StringBuilder rosto_str = new StringBuilder("");
+
+            for(int i = 0; i < rosto.Length; i++)
+            {
+                rosto_str.Append(rosto[i].ToString());
+            }
+            label2.Text = rosto_str.ToString();
+
+            double menor_dist = 99999.0;
+            double dist = 0.0;
+            double[] rosto_parecido = null;
+            foreach (double[] i in pessoas)
+            {
+                dist = Math.Sqrt(Math.Pow((rosto[0] - i[0]), 2) + Math.Pow((rosto[1] - i[1]), 2) + Math.Pow((rosto[2] - i[2]), 2));
+
+                if(dist < menor_dist)
+                {
+                    menor_dist = dist;
+                    rosto_parecido = i;
+                }
+            }
+
+            StringBuilder testes = new StringBuilder("");
+            for (int i = 0; i < rosto_parecido.Length; i++)
+            {
+                testes.Append(rosto_parecido[i].ToString());
+            }
+            label3.Text = menor_dist.ToString();
+            label4.Text = testes.ToString();
         }
     }
 }
