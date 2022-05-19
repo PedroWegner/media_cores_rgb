@@ -8,17 +8,13 @@ namespace media_cores_rgb.Entities
 {
     internal class Usuario
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public double[] RGB { get; set; }
-        public long Qtd_bytes { get; set; }
+        public string NomeSobrenome { get; set; }
+        public double[] BGR { get; set; }
 
-        public Usuario(int id, string name, double[] rGB, long qtd_bytes)
+        public Usuario(string nomesobrenome, double[] bgr)
         {
-            Id = id;
-            Name = name;
-            RGB = rGB;
-            Qtd_bytes = qtd_bytes;
+            NomeSobrenome = nomesobrenome;
+            BGR = bgr;
         }
     }
 }

@@ -12,7 +12,11 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AForge.Video;
 using AForge.Video.DirectShow;
-
+using media_cores_rgb.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace media_cores_rgb
 {
@@ -26,13 +30,26 @@ namespace media_cores_rgb
         double somaG = 0;
         double somaB = 0;
         double count = 0;
-        double[] vetor = new double[1];
-        List<double[]> pessoas = new List<double[]>();
+
+        double total = 0.0;
+        double menor_dist = 99999.0;
+        double dist = 0.0;
 
 
+        double mediaB = 0.0;
+        double mediaG = 0.0;
+        double mediaR = 0.0;
 
+        double blue = 0.0;
+        double green = 0.0;
+        double red = 0.0;
+        List<Usuario> listaUsuario = new List<Usuario>();
         #endregion
 
+        #region Json variables
+        string file = null;
+
+        #endregion
         public Form1()
         {
             InitializeComponent();
@@ -42,7 +59,6 @@ namespace media_cores_rgb
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // procura os perifericos capazes de capturar video
             fic = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo filterInfo in fic)
             {
@@ -63,8 +79,6 @@ namespace media_cores_rgb
 
         private void VideoCaptureFrames(object sender, NewFrameEventArgs eventArgs)
         {
-
-
             bmp = (Bitmap)eventArgs.Frame.Clone();
             var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
             var data = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
@@ -77,12 +91,9 @@ namespace media_cores_rgb
             count = 0;
             for (int i = 0; i < array.Length; i += 3)
             {
-                if (!(array[i + 0] < 128 && array[i + 1] < 128 && array[i + 2] < 128))
+                if (!(array[i + 0] < 76 && array[i + 1] < 76 && array[i + 2] < 76))
                 {
                     count++;
-                    array[i + 0] = 255;
-                    array[i + 1] = 255;
-                    array[i + 2] = 255;
                 }
                 else
                 {
@@ -91,19 +102,16 @@ namespace media_cores_rgb
                     somaR += array[i + 2];
                 }
 
-
-
             }
-            var mediaB = somaB / ((array.Length / 3) - count);
-            var mediaG = somaG / ((array.Length / 3) - count);
-            var mediaR = somaR / ((array.Length / 3) - count);
-            var total = Math.Sqrt(mediaB * mediaB + mediaG * mediaG + mediaR * mediaR); // usando esse total aqui
+            double x = (array.Length / 3);
+            mediaB = somaB / (x - count);
+            mediaG = somaG / (x - count);
+            mediaR = somaR / (x - count);
+            total = (Math.Sqrt(mediaB * mediaB + mediaG * mediaG + mediaR * mediaR)) / 255;
 
-
-            labelBlue.Text = (mediaB / mediaG).ToString();
-            labelGreen.Text = (mediaG / mediaR).ToString();
-            labelRed.Text = (mediaR / mediaB).ToString();
-            labelByte.Text = total.ToString();
+            blue = mediaB / mediaG;
+            green = mediaG / mediaR;
+            red = mediaR / mediaB;
 
             Marshal.Copy(array, 0, data.Scan0, array.Length);
             bmp.UnlockBits(data);
@@ -114,7 +122,7 @@ namespace media_cores_rgb
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (vdc.IsRunning == true)
+            if (vdc.IsRunning)
             {
                 vdc.Stop();
             }
@@ -122,55 +130,54 @@ namespace media_cores_rgb
 
         private void salvarBtn_Click(object sender, EventArgs e)
         {
-            // a ideia eh trocar esse teste para 'qtd_bytes'
-            double teste = double.Parse(labelByte.Text);
-            double[] pessoa = { double.Parse(labelBlue.Text) * teste, double.Parse(labelGreen.Text) * teste, double.Parse(labelRed.Text)* teste };
-            pessoas.Add(pessoa);
+            double[] lista_bgr = { blue * total, green * total, red * total };
+            string nomesobrenome = nomePessoa.Text.ToString().Replace(" ", "").ToLower();
+            var usuario = new Usuario(nomesobrenome, lista_bgr);
+            file = $@"C:\temp\json\{nomesobrenome}.json";
+            var json = JsonConvert.SerializeObject(usuario);
 
+            if (!File.Exists(file))
+            {
+                File.WriteAllText(file, json);
+            }
+            else
+            {
+                File.Delete(file);
+                File.WriteAllText(file, json);
+            }
         }
-        StringBuilder st = null;
+
         private void showPessoas_Click(object sender, EventArgs e)
         {
-            st = new StringBuilder("");
-            foreach (double[] i in pessoas)
+            double[] rosto = { blue * total, green * total, red * total };
+
+            string pessoa_semelhante = null;
+            menor_dist = 9999;
+            listaUsuario.Clear();
+
+            string[] jsonFiles = Directory.GetFiles(@"c:\temp\json", "*.json");
+            foreach (string file in jsonFiles)
             {
-                st.AppendLine(i[0].ToString() + " - " + i[1].ToString() + " - " + i[2].ToString());
+                using (StreamReader r = new StreamReader($"{file}"))
+                {
+                    string json = r.ReadToEnd();
+                    Usuario usuario = JsonConvert.DeserializeObject<Usuario>(json);
+                    listaUsuario.Add(usuario);
+                    
+                }
             }
-            label1.Text = st.ToString();
-
-
-            double teste = double.Parse(labelByte.Text);
-            // a ideia eh trocar esse teste para 'qtd_bytes'
-            double[] rosto = {double.Parse(labelBlue.Text) * teste, double.Parse(labelGreen.Text) * teste, double.Parse(labelRed.Text)* teste };
-            StringBuilder rosto_str = new StringBuilder("");
-
-            for(int i = 0; i < rosto.Length; i++)
+            
+            foreach (Usuario usuario in listaUsuario)
             {
-                rosto_str.Append(rosto[i].ToString());
-            }
-            label2.Text = rosto_str.ToString();
-
-            double menor_dist = 99999.0;
-            double dist = 0.0;
-            double[] rosto_parecido = null;
-            foreach (double[] i in pessoas)
-            {
-                dist = Math.Sqrt(Math.Pow((rosto[0] - i[0]), 2) + Math.Pow((rosto[1] - i[1]), 2) + Math.Pow((rosto[2] - i[2]), 2));
+                dist = Math.Sqrt(Math.Pow((rosto[0] - usuario.BGR[0]), 2) + Math.Pow((rosto[1] - usuario.BGR[1]), 2) + Math.Pow((rosto[2] - usuario.BGR[2]), 2));
 
                 if(dist < menor_dist)
                 {
                     menor_dist = dist;
-                    rosto_parecido = i;
+                    pessoa_semelhante = usuario.NomeSobrenome;
                 }
             }
-
-            StringBuilder testes = new StringBuilder("");
-            for (int i = 0; i < rosto_parecido.Length; i++)
-            {
-                testes.Append(rosto_parecido[i].ToString());
-            }
-            label3.Text = menor_dist.ToString();
-            label4.Text = testes.ToString();
+            MessageBox.Show($"Semelhante a {pessoa_semelhante}");
         }
     }
 }

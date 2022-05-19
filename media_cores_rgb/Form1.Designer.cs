@@ -30,18 +30,11 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pictureWeb = new System.Windows.Forms.PictureBox();
+            this.nomePessoa = new System.Windows.Forms.TextBox();
             this.showPessoas = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.salvarBtn = new System.Windows.Forms.Button();
-            this.labelByte = new System.Windows.Forms.Label();
-            this.labelGreen = new System.Windows.Forms.Label();
-            this.labelBlue = new System.Windows.Forms.Label();
-            this.labelRed = new System.Windows.Forms.Label();
             this.startButton = new System.Windows.Forms.Button();
             this.comboWeb = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -61,16 +54,9 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.label4);
-            this.splitContainer1.Panel2.Controls.Add(this.label3);
-            this.splitContainer1.Panel2.Controls.Add(this.label2);
+            this.splitContainer1.Panel2.Controls.Add(this.nomePessoa);
             this.splitContainer1.Panel2.Controls.Add(this.showPessoas);
-            this.splitContainer1.Panel2.Controls.Add(this.label1);
             this.splitContainer1.Panel2.Controls.Add(this.salvarBtn);
-            this.splitContainer1.Panel2.Controls.Add(this.labelByte);
-            this.splitContainer1.Panel2.Controls.Add(this.labelGreen);
-            this.splitContainer1.Panel2.Controls.Add(this.labelBlue);
-            this.splitContainer1.Panel2.Controls.Add(this.labelRed);
             this.splitContainer1.Panel2.Controls.Add(this.startButton);
             this.splitContainer1.Panel2.Controls.Add(this.comboWeb);
             this.splitContainer1.Size = new System.Drawing.Size(1179, 559);
@@ -86,6 +72,13 @@
             this.pictureWeb.TabIndex = 0;
             this.pictureWeb.TabStop = false;
             // 
+            // nomePessoa
+            // 
+            this.nomePessoa.Location = new System.Drawing.Point(12, 208);
+            this.nomePessoa.Name = "nomePessoa";
+            this.nomePessoa.Size = new System.Drawing.Size(204, 22);
+            this.nomePessoa.TabIndex = 11;
+            // 
             // showPessoas
             // 
             this.showPessoas.Location = new System.Drawing.Point(10, 268);
@@ -96,15 +89,6 @@
             this.showPessoas.UseVisualStyleBackColor = true;
             this.showPessoas.Click += new System.EventHandler(this.showPessoas_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 316);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 16);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "label1";
-            // 
             // salvarBtn
             // 
             this.salvarBtn.Location = new System.Drawing.Point(7, 236);
@@ -114,42 +98,6 @@
             this.salvarBtn.Text = "Salvar";
             this.salvarBtn.UseVisualStyleBackColor = true;
             this.salvarBtn.Click += new System.EventHandler(this.salvarBtn_Click);
-            // 
-            // labelByte
-            // 
-            this.labelByte.AutoSize = true;
-            this.labelByte.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelByte.Location = new System.Drawing.Point(2, 179);
-            this.labelByte.Name = "labelByte";
-            this.labelByte.Size = new System.Drawing.Size(0, 24);
-            this.labelByte.TabIndex = 4;
-            // 
-            // labelGreen
-            // 
-            this.labelGreen.AutoSize = true;
-            this.labelGreen.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelGreen.Location = new System.Drawing.Point(3, 101);
-            this.labelGreen.Name = "labelGreen";
-            this.labelGreen.Size = new System.Drawing.Size(0, 24);
-            this.labelGreen.TabIndex = 3;
-            // 
-            // labelBlue
-            // 
-            this.labelBlue.AutoSize = true;
-            this.labelBlue.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelBlue.Location = new System.Drawing.Point(3, 134);
-            this.labelBlue.Name = "labelBlue";
-            this.labelBlue.Size = new System.Drawing.Size(0, 24);
-            this.labelBlue.TabIndex = 2;
-            // 
-            // labelRed
-            // 
-            this.labelRed.AutoSize = true;
-            this.labelRed.Font = new System.Drawing.Font("Arial Narrow", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelRed.Location = new System.Drawing.Point(3, 68);
-            this.labelRed.Name = "labelRed";
-            this.labelRed.Size = new System.Drawing.Size(0, 24);
-            this.labelRed.TabIndex = 1;
             // 
             // startButton
             // 
@@ -168,33 +116,6 @@
             this.comboWeb.Name = "comboWeb";
             this.comboWeb.Size = new System.Drawing.Size(213, 24);
             this.comboWeb.TabIndex = 0;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 413);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 16);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "label2";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 471);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(44, 16);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "label3";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 512);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 16);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "label4";
             // 
             // Form1
             // 
@@ -223,16 +144,9 @@
         private System.Windows.Forms.PictureBox pictureWeb;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.ComboBox comboWeb;
-        private System.Windows.Forms.Label labelGreen;
-        private System.Windows.Forms.Label labelBlue;
-        private System.Windows.Forms.Label labelRed;
-        private System.Windows.Forms.Label labelByte;
         private System.Windows.Forms.Button salvarBtn;
         private System.Windows.Forms.Button showPessoas;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox nomePessoa;
     }
 }
 
