@@ -9,64 +9,82 @@ namespace media_cores_rgb
 {
     public class Kmeans
     {
-        public Color[] Clusterize(byte[] array, int K)
+        public List<int[]> Clusterize(List<int[]> list, int k)
         {
-            Color[] colors = new Color[K];
+            #region Variables
+            List<int[]> colors = new List<int[]>();
             Random random = new Random();
-            for (int i = 0; i < K; i++)
+            //List<List<int[]>> listClusters = new List<List<int[]>>();
+            double minorDist = 999999.0;
+            int cluster = 0;
+
+            double blue = 0;
+            double green = 0;
+            double red = 0;
+
+            List<long> countCluster = new List<long>();
+            List<long> blueSum = new List<long>();
+            List<long> greenSum = new List<long>();
+            List<long> redSum = new List<long>();
+
+            #endregion
+            for (int i = 0; i < k; i++)
             {
-                colors[i] = Color.FromArgb(random.Next(255), random.Next(255), random.Next(255));
+                // Red, Green, Blue
+                colors.Add(new int[] { random.Next(255), random.Next(255), random.Next(255) });
+                countCluster.Add(0);
+                redSum.Add(0);
+                greenSum.Add(0);
+                blueSum.Add(0);
             }
 
-            for (int n = 0; n < 2000; n++)
+            // aqui sao as iteracoes
+            for (int i = 0; i < 50; i++)
             {
-
-                List<long> count = new List<long>();
-                List<long> R = new List<long>();
-                List<long> G = new List<long>();
-                List<long> B = new List<long>();
-
-                for (int i = 0; i < K; i++)
+                for (int j = 0; j < list.Count; j++)
+                //preciso calcular distancia entre o pixel e o nucleo
                 {
-                    count.Add(0);
-                    R.Add(0);
-                    G.Add(0);
-                    B.Add(0);
-                }
-
-                for (int i = 0; i < array.Length; i += 3)
-                {
-                    int dist = (array[i] - colors[0].B) * (array[i] - colors[0].B) +
-                         (array[i + 1] - colors[0].G) * (array[i + 1] - colors[0].G) +
-                          (array[i + 2] - colors[0].R) * (array[i + 2] - colors[0].R);
-                    int cluster = 0;
-                    for (int k = 1; k < K; k++)
+                    minorDist = 999999.0;
+                    for (int c = 0; c < k; c++)
                     {
-                        int newdist = (array[i] - colors[k].B) * (array[i] - colors[k].B) +
-                         (array[i + 1] - colors[k].G) * (array[i + 1] - colors[k].G) +
-                          (array[i + 2] - colors[k].R) * (array[i + 2] - colors[k].R);
-                        if (newdist < dist)
+                        double dr = list[j][0] - colors[c][0];
+                        double dg = list[j][1] - colors[c][1];
+                        double db = list[j][2] - colors[c][2];
+                        double dist = (dr * dr) + (dg * dg) + (db * db);
+                        if (dist < minorDist)
                         {
-                            dist = newdist;
-                            cluster = k;
+                            minorDist = dist;
+                            cluster = c;
                         }
                     }
-                    count[cluster]++;
-                    R[cluster] += array[i + 2];
-                    G[cluster] += array[i + 1];
-                    B[cluster] += array[i];
+                    countCluster[cluster]++;
+                    redSum[cluster] += list[j][0];
+                    greenSum[cluster] += list[j][1];
+                    blueSum[cluster] += list[j][2];
+
                 }
-                for (int k = 0; k < K; k++)
+
+                for (int n = 0; n < countCluster.Count; n++)
                 {
-                    if (count[k] == 0)
-                        continue;
-                    colors[k] = Color.FromArgb((int)(R[k] / count[k]),
-                        (int)(G[k] / count[k]),
-                        (int)(B[k] / count[k]));
+                    if (countCluster[n] > 0)
+                    {
+                        red = redSum[n] / countCluster[n];
+                        green = greenSum[n] / countCluster[n];
+                        blue = blueSum[n] / countCluster[n];
+                        colors[n] = new int[] { (int)(red), (int)(green), (int)(blue) };
+                    }
+                    else
+                    {
+                        colors[n] = new int[] { 255, 255, 255 };
+                    }
+                    countCluster[n] = 0;
+                    redSum[n] = 0;
+                    greenSum[n] = 0;
+                    blueSum[n] = 0;
                 }
+
+
             }
-
-
             return colors;
         }
     }

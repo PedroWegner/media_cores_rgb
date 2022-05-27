@@ -76,7 +76,7 @@ namespace media_cores_rgb
             comboWeb.SelectedIndex = 0;
             vdc = new VideoCaptureDevice();
             startButton_Click(sender, e);
-            tm.Start();
+            //tm.Start();
         }
 
         private void startButton_Click(object sender, EventArgs e)
@@ -89,90 +89,68 @@ namespace media_cores_rgb
         private void VideoCaptureFrames(object sender, NewFrameEventArgs eventArgs)
         {
             bmp = (Bitmap)eventArgs.Frame.Clone();
-            var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-            var data = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            var array = new byte[data.Height * data.Stride];
-            Marshal.Copy(data.Scan0, array, 0, array.Length);
-
-            Kmeans kmeans = new Kmeans();
-            var colors = kmeans.Clusterize(array, 5)
-                .OrderBy(c => c.R + c.G + c.B).ToArray();
-            panel1.BackColor = colors[0];
-            panel2.BackColor = colors[1];
-            panel3.BackColor = colors[2];
-            panel4.BackColor = colors[3];
-            panel5.BackColor = colors[4];
-
-            somaBDark = 0;
-            somaGDark = 0;
-            somaRDark = 0;
-            somaBLight = 0;
-            somaGLight = 0;
-            somaRLight = 0;
-            qtdPixelLight = 0;
-            for (int i = 0; i < array.Length; i += 3)
-            {
-                if (!(array[i + 0] < 85 && array[i + 1] < 85 && array[i + 2] < 85))
-                {
-                    qtdPixelLight++;
-                    somaBLight += array[i + 0];
-                    somaGLight += array[i + 1];
-                    somaRLight += array[i + 2];
-
-                }
-                else
-                {
-                    somaBDark += array[i + 0];
-                    somaGDark += array[i + 1];
-                    somaRDark += array[i + 2];
-                }
+            //var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            //var data = bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+            //var array = new byte[data.Height * data.Stride];
+            //Marshal.Copy(data.Scan0, array, 0, array.Length);
 
 
-            }
-            double qtdPixel = (array.Length / 3);
-            double qtdPixelEscuro = qtdPixel - qtdPixelLight;
-            // media de BGR em pixel escuros
-            mediaBDark = somaBDark / (qtdPixel - qtdPixelLight);
-            mediaGDark = somaGDark / (qtdPixel - qtdPixelLight);
-            mediaRDark = somaRDark / (qtdPixel - qtdPixelLight);
+            //somaBDark = 0;
+            //somaGDark = 0;
+            //somaRDark = 0;
+            //somaBLight = 0;
+            //somaGLight = 0;
+            //somaRLight = 0;
+            //qtdPixelLight = 0;
+            //for (int i = 0; i < array.Length; i += 3)
+            //{
+            //    if (!(array[i + 0] < 85 && array[i + 1] < 85 && array[i + 2] < 85))
+            //    {
+            //        qtdPixelLight++;
+            //        somaBLight += array[i + 0];
+            //        somaGLight += array[i + 1];
+            //        somaRLight += array[i + 2];
 
-            // meida de BGR em pixels claros
-            mediaBLight = somaBLight / qtdPixelLight;
-            mediaGLight = somaGLight / qtdPixelLight;
-            mediaRLight = somaRLight / qtdPixelLight;
-            // norma das medias
-            normaLight = ((Math.Sqrt(mediaBLight * mediaBLight + mediaGLight * mediaGLight + mediaRLight * mediaRLight)) / (255));
-            normaDark = ((Math.Sqrt(mediaBDark * mediaBDark + mediaGDark * mediaGDark + mediaRDark * mediaRDark)) / (255));
+            //    }
+            //    else
+            //    {
+            //        somaBDark += array[i + 0];
+            //        somaGDark += array[i + 1];
+            //        somaRDark += array[i + 2];
+            //    }
 
-            // uma cor pela outra pixels escuros
-            bluePerGreen = mediaBDark / mediaGDark;
-            greenPerRed = mediaGDark / mediaRDark;
-            redPerBlue = mediaRDark / mediaBDark;
 
-            bluePerRed = mediaBDark / mediaRDark;
-            greenPerBlue = mediaGDark / mediaBDark;
-            redPerGreen = mediaRDark / mediaGDark;
+            //}
+            //double qtdPixel = (array.Length / 3);
+            //double qtdPixelEscuro = qtdPixel - qtdPixelLight;
+            //// media de BGR em pixel escuros
+            //mediaBDark = somaBDark / (qtdPixel - qtdPixelLight);
+            //mediaGDark = somaGDark / (qtdPixel - qtdPixelLight);
+            //mediaRDark = somaRDark / (qtdPixel - qtdPixelLight);
 
-            // uma cor pela outra pixels claros
-            //double _1 = mediaBLight / mediaGLight;
-            //double _2 = mediaGLight / mediaRLight;
-            //double _3 = mediaRLight / mediaBLight;
+            //// meida de BGR em pixels claros
+            //mediaBLight = somaBLight / qtdPixelLight;
+            //mediaGLight = somaGLight / qtdPixelLight;
+            //mediaRLight = somaRLight / qtdPixelLight;
+            //// norma das medias
+            //normaLight = ((Math.Sqrt(mediaBLight * mediaBLight + mediaGLight * mediaGLight + mediaRLight * mediaRLight)) / (255));
+            //normaDark = ((Math.Sqrt(mediaBDark * mediaBDark + mediaGDark * mediaGDark + mediaRDark * mediaRDark)) / (255));
 
-            //double _4 = mediaBLight / mediaRLight;
-            //double _5 = mediaGLight / mediaBLight;
-            //double _6 = mediaRLight / mediaGLight;
+            //// uma cor pela outra pixels escuros
+            //bluePerGreen = mediaBDark / mediaGDark;
+            //greenPerRed = mediaGDark / mediaRDark;
+            //redPerBlue = mediaRDark / mediaBDark;
 
-            //// dark / light
-            //double _7 = somaBDark / somaBLight;
-            //double _8 = somaGDark / somaGLight;
-            //double _9 = somaRDark / somaRLight;
-            Marshal.Copy(array, 0, data.Scan0, array.Length);
-            bmp.UnlockBits(data);
+            //bluePerRed = mediaBDark / mediaRDark;
+            //greenPerBlue = mediaGDark / mediaBDark;
+            //redPerGreen = mediaRDark / mediaGDark;
+
+            //Marshal.Copy(array, 0, data.Scan0, array.Length);
+            //bmp.UnlockBits(data);
 
             pictureWeb.Image?.Dispose(); // para liberar consumo de memoria
             pictureWeb.Image = bmp;
 
-            vdc.Stop();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -232,13 +210,30 @@ namespace media_cores_rgb
                     pessoa_semelhante = usuario.NomeSobrenome;
                 }
             }
-            label7.Text = menorDist.ToString();
             label8.Text = ($"Semelhante a {pessoa_semelhante}");
         }
 
         private void tm_Tick(object sender, EventArgs e)
         {
             showPessoas_Click();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            vdc.Stop();
+            ImageFormt im = new ImageFormt(bmp);
+            Kmeans kmeans = new Kmeans();
+            List<int[]> colors = kmeans.Clusterize(im.pixelsArray, 8);
+            panel1.BackColor = Color.FromArgb(colors[0][0], colors[0][1], colors[0][2]);
+            panel2.BackColor = Color.FromArgb(colors[1][0], colors[1][1], colors[1][2]);
+            panel3.BackColor = Color.FromArgb(colors[2][0], colors[2][1], colors[2][2]);
+            panel4.BackColor = Color.FromArgb(colors[3][0], colors[3][1], colors[3][2]);
+            panel5.BackColor = Color.FromArgb(colors[4][0], colors[4][1], colors[4][2]);
+            panel6.BackColor = Color.FromArgb(colors[5][0], colors[5][1], colors[5][2]);
+            panel7.BackColor = Color.FromArgb(colors[6][0], colors[6][1], colors[6][2]);
+            panel8.BackColor = Color.FromArgb(colors[7][0], colors[7][1], colors[7][2]);
+            Console.WriteLine();
+            vdc.Start();
         }
     }
 }
