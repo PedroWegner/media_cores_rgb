@@ -13,19 +13,20 @@ namespace media_cores_rgb.Entities
     {
         private Bitmap _bmp { set; get; }
         public byte[] byteArray { get; set; }
+        public int Height { get; set; }
+        public int Stride { get; set; }
 
-        public int blueAverage { get; set; }
-        public int greenAverage { get; set; }
-        public int redAverage { get; set; }
-
-        public List<int[]> pixelsArray { get; set; } = new List<int[]>();
-
+        public double blueAverage { get; set; }
+        public double greenAverage { get; set; }
+        public double redAverage { get; set; }
+        public double normaDark { get; set; }
 
         public ImageFormt(Bitmap bmp)
         {
             _bmp = bmp;
             byteArrayMontage();
-            pixelArrayMontage();
+            BGRAverage();
+            normaDark = ((Math.Sqrt(blueAverage * blueAverage + greenAverage * greenAverage + redAverage * redAverage)) / (255));
         }
 
         public void byteArrayMontage()
@@ -33,6 +34,8 @@ namespace media_cores_rgb.Entities
             var rect = new Rectangle(0, 0, _bmp.Width, _bmp.Height);
             var data = _bmp.LockBits(rect, ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
             byteArray = new byte[data.Height * data.Stride];
+            Height = data.Height;
+            Stride = data.Stride;
             Marshal.Copy(data.Scan0, byteArray, 0, byteArray.Length);
             _bmp.UnlockBits(data);
         }
@@ -42,28 +45,29 @@ namespace media_cores_rgb.Entities
             double blueSum = 0.0;
             double greenSum = 0.0;
             double redSum = 0.0;
-
+            int qtdPixelLight = 0;
             for (int i = 0; i < byteArray.Length; i += 3)
             {
-                blueSum += byteArray[i + 0];
-                greenSum += byteArray[i + 1];
-                redSum += byteArray[i + 2];
-            }
-            double qtdPixel = (byteArray.Length / 3);
-            blueAverage = (int)(blueSum / qtdPixel);
-            greenAverage = (int)(greenSum / qtdPixel);
-            redAverage = (int)(redSum / qtdPixel);
+                if (!(byteArray[i + 0] < 85 && byteArray[i + 1] < 85 && byteArray[i + 2] < 85))
+                {
+                    qtdPixelLight++;
+                    //somaBLight += array[i + 0];
+                    //somaGLight += array[i + 1];
+                    //somaRLight += array[i + 2];
 
-        }
-
-        public void pixelArrayMontage()
-        {
-            for (int i = 0; i < byteArray.Length; i += 3)
-            {
-                // Red, Green, Blue
-                int[] pixel = { byteArray[i + 2], byteArray[i + 1], byteArray[i + 0] };
-                pixelsArray.Add(pixel);
+                }
+                else
+                {
+                    blueSum += byteArray[i + 0];
+                    greenSum += byteArray[i + 1];
+                    redSum += byteArray[i + 2];
+                }
             }
+            double qtdPixelDark = (byteArray.Length / 3) - qtdPixelLight; 
+            blueAverage = (double)(blueSum / qtdPixelDark);
+            greenAverage = (double)(greenSum / qtdPixelDark);
+            redAverage = (double)(redSum / qtdPixelDark);
+
         }
     }
 }

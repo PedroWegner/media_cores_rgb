@@ -12,6 +12,7 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Linq;
+using kinectlibrary;
 
 namespace media_cores_rgb
 {
@@ -52,6 +53,9 @@ namespace media_cores_rgb
         double redPerGreen = 0.0;
 
         List<Usuario> listaUsuario = new List<Usuario>();
+        Color[] userColor = null;
+        int[] teste = null;
+        double[] lista_bgr = null; //{ bluePerGreen, greenPerRed, redPerBlue, bluePerRed, greenPerBlue, redPerGreen, normaDark }
         #endregion
 
         #region Json variables
@@ -163,9 +167,10 @@ namespace media_cores_rgb
 
         private void salvarBtn_Click(object sender, EventArgs e)
         {
-            double[] lista_bgr = { bluePerGreen, greenPerRed, redPerBlue, bluePerRed, greenPerBlue, redPerGreen, normaDark };
+            CalculateImage();
             string nomesobrenome = nomePessoa.Text.ToString().Replace(" ", "").ToLower();
-            var usuario = new Usuario(nomesobrenome, lista_bgr);
+            var usuario = new Usuario(nomesobrenome, lista_bgr, teste);
+            usuario.NomeSobrenome = nomesobrenome;
             file = $@"C:\temp\json\{nomesobrenome}.json";
             var json = JsonConvert.SerializeObject(usuario);
 
@@ -182,10 +187,10 @@ namespace media_cores_rgb
 
         private void showPessoas_Click()
         {
-            double[] rosto = { bluePerGreen, greenPerRed, redPerBlue, bluePerRed, greenPerBlue, redPerGreen, normaDark };
-
+            CalculateImage();
+            Usuario lox = new Usuario("", lista_bgr, teste); // pessoa na frente do pc
             string pessoa_semelhante = null;
-            menorDist = 9999;
+            menorDist = double.MaxValue;
             listaUsuario.Clear();
 
             string[] jsonFiles = Directory.GetFiles(@"c:\temp\json", "*.json");
@@ -199,14 +204,21 @@ namespace media_cores_rgb
 
                 }
             }
-
+            int minorError = int.MaxValue;
             foreach (Usuario usuario in listaUsuario)
             {
-                dist = Math.Sqrt(Math.Pow((rosto[0] - usuario.BGR[0]), 2) + Math.Pow((rosto[1] - usuario.BGR[1]), 2) + Math.Pow((rosto[2] - usuario.BGR[2]), 2) + Math.Pow((rosto[3] - usuario.BGR[3]), 2) + Math.Pow((rosto[4] - usuario.BGR[4]), 2) + Math.Pow((rosto[5] - usuario.BGR[5]), 2) + Math.Pow((rosto[6] - usuario.BGR[6]), 2));
-
-                if (dist < menorDist)
+                //double dist = Math.Sqrt((usuario.BGRList[0] - lox.BGRList[0]) * (usuario.BGRList[0] - lox.BGRList[0]) +
+                //    (usuario.BGRList[1] - lox.BGRList[1]) * (usuario.BGRList[1] - lox.BGRList[1]) +
+                //     (usuario.BGRList[2] - lox.BGRList[2]) * (usuario.BGRList[2] - lox.BGRList[2]));
+                //if (dist < menorDist)
+                //{
+                //    menorDist = dist;
+                //    pessoa_semelhante = usuario.NomeSobrenome;
+                //}
+                int error = CalculaErro(lox.Colors,usuario.Colors);
+                if(error < minorError)
                 {
-                    menorDist = dist;
+                    minorError = error;
                     pessoa_semelhante = usuario.NomeSobrenome;
                 }
             }
@@ -220,20 +232,87 @@ namespace media_cores_rgb
 
         private void button1_Click(object sender, EventArgs e)
         {
+            showPessoas_Click();
+            
+        }
+
+        public void CalculateImage()
+        {
             vdc.Stop();
-            ImageFormt im = new ImageFormt(bmp);
+            ImageFormt img = new ImageFormt(bmp);
             Kmeans kmeans = new Kmeans();
-            List<int[]> colors = kmeans.Clusterize(im.pixelsArray, 8);
-            panel1.BackColor = Color.FromArgb(colors[0][0], colors[0][1], colors[0][2]);
-            panel2.BackColor = Color.FromArgb(colors[1][0], colors[1][1], colors[1][2]);
-            panel3.BackColor = Color.FromArgb(colors[2][0], colors[2][1], colors[2][2]);
-            panel4.BackColor = Color.FromArgb(colors[3][0], colors[3][1], colors[3][2]);
-            panel5.BackColor = Color.FromArgb(colors[4][0], colors[4][1], colors[4][2]);
-            panel6.BackColor = Color.FromArgb(colors[5][0], colors[5][1], colors[5][2]);
-            panel7.BackColor = Color.FromArgb(colors[6][0], colors[6][1], colors[6][2]);
-            panel8.BackColor = Color.FromArgb(colors[7][0], colors[7][1], colors[7][2]);
+            List<Color> colors = kmeans.Clusterize(img.byteArray, 64, img.Height, img.Stride).OrderBy(c => c.R + c.G + c.B).ToList();
+            int qtdColors = 16;
+            int index = 0;
+            userColor = new Color[qtdColors];
+            teste = new int[qtdColors * 3];
+
+
+            flp.Controls.Clear();
+            foreach (var color in colors.OrderByDescending(c =>
+            {
+                int drg = c.R - c.G;
+                int drb = c.R - c.B;
+                int dgb = c.G - c.B;
+                int result = drg * drg + drb * drb + dgb * dgb;
+                return result;
+            }).Take(qtdColors))
+            {
+                Panel p = new Panel();
+                p.BackColor = color;
+                p.Size = new Size(30, 30);
+                flp.Controls.Add(p);
+                teste[index] = color.R;
+                teste[index + 1] = color.G;
+                teste[index + 2] = color.B;
+                index += 3;
+            }
+
+            #region imgAvarage
+            bluePerGreen = img.blueAverage / img.greenAverage;
+            greenPerRed = img.greenAverage / img.redAverage;
+            redPerBlue = img.redAverage / img.blueAverage;
+            normaDark = img.normaDark;
+            lista_bgr = new double[4] { bluePerGreen, greenPerRed, redPerBlue, normaDark };
+            #endregion
+
             Console.WriteLine();
             vdc.Start();
+        }
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nomePessoa_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        public int CalculaErro(int[] userEntrado, int[] usuarioLista) // cada lista tem 48 int, separado em 3 e 3
+        {
+            int errorTotal = 0;
+            
+            for(int i = 0; i < (userEntrado.Length); i+=3)
+            {
+                int minorError = int.MaxValue;
+
+                for(int j = 0; j < (usuarioLista.Length); j +=3)
+                {
+                    int error = ((userEntrado[i + 0] - usuarioLista[j + 0]) * (userEntrado[i + 0] - usuarioLista[j + 0]) +
+                        (userEntrado[i + 1] - usuarioLista[j + 1]) * (userEntrado[i + 1] - usuarioLista[j + 1]) +
+                        (userEntrado[i + 2] - usuarioLista[j + 2]) * (userEntrado[i + 2] - usuarioLista[j + 2]));
+
+                    if(error < minorError)
+                    {
+                        minorError = error;
+                    }
+                }
+                errorTotal += minorError;
+            }
+
+
+            return errorTotal;
         }
     }
 }
